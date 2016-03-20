@@ -6,6 +6,8 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 
+'use strict';
+
 google.charts.load("current", {packages:["corechart"]});
 google.charts.setOnLoadCallback(onLoad);
 
@@ -17,18 +19,16 @@ var tableOrder = ["age", "published", "cited", "h", "i5", "c5"],
 function queryTable(id) {
 	var url = "https://docs.google.com/spreadsheets/d/",
 		selector = '/gviz/tq?&range=',
-	   	queryString = 'B:I'
+	   	queryString = 'B:I';
 
-	var query = new google.visualization.Query(url + id 
-												+ selector + queryString);
+	var query = new google.visualization.Query(url + id + selector + queryString);
 	query.send(handleQueryResponse);
 }
 
-function fillSelect(items)
-{
+function fillSelect(items) {
 	var sortby_select = document.getElementById("sortby"),
 
-		create_option = function(txt) { 
+		create_option = function(txt) {
 			var opt = document.createElement("option");
 			opt.text = txt;
 			return opt;
@@ -45,7 +45,7 @@ function onLoad() {
 }
 
 function redrawStats() {
-	var	showColumns = [0];
+	var	showColumns = [0], colors = [];
 
 	tableOrder.forEach(function(par, n, arr) {
 		if(document.getElementById(par).checked) {
@@ -56,26 +56,27 @@ function redrawStats() {
 	var view = new google.visualization.DataView(data);
 	view.setColumns(showColumns);
 
-	colors = showColumns.slice(1).map(function(n, i, arr) { 
-			return tableColors[n-2]; 
-		});
+	showColumns.slice(1)
+			.forEach(function(n, i, arr) {
+				colors.push(tableColors[n-2]);
+			});
 
-	chartDivId = document.getElementById('chart_div');
+	var chartDivId = document.getElementById('chart_div');
 	var chart = new google.visualization.ColumnChart(chartDivId),
-		options = { title: 'Статистика ВТФ', width: 1280, colors };
+		options = {title: 'Статистика ВТФ', width: 1280, colors: colors};
 	chart.draw(view, options);
 }
 
 function handleQueryResponse(response) {
 	if (response.isError()) {
-		alert('Error in query: ' 
+		alert('Error in query: '
 				+ response.getMessage() + ' '
 				+ response.getDetailedMessage());
 		return;
 	}
 
 	data = response.getDataTable();
-	sortby = document.getElementById("sortby").selectedIndex + 2;
+	var sortby = document.getElementById("sortby").selectedIndex + 2;
 	console.log(sortby);
 	//sortby = 5;
 	data.sort({column : sortby})
@@ -92,7 +93,7 @@ function handleQueryResponse(response) {
 <input type="checkbox" id="published" onclick="redrawStats()">
 	Всіх публікацій<br>
 <input type="checkbox" id="cited" onclick="redrawStats()">Всіх посилань<br>
-<input type="checkbox" id="h" onclick="redrawStats()", checked>Індекс Гірша<br>
+<input type="checkbox" id="h" onclick="redrawStats()" checked>Індекс Гірша<br>
 <input type="checkbox" id="i5" onclick="redrawStats()">Індекс I5<br>
 <input type="checkbox" id="c5" onclick="redrawStats()">Індекс С5<br>
 
