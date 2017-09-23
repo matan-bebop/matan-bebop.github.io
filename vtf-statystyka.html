@@ -1,0 +1,108 @@
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+
+'use strict';
+
+google.charts.load("current", {packages:["corechart"]});
+google.charts.setOnLoadCallback(onLoad);
+
+var data;
+var tableOrder = ["age", "published", "cited", "h", "i5", "c5"],
+	tableColors = ["#9b59b6", "#3498db", "#95a5a6",
+					"#e74c3c", "#34495e", "#2ecc71"];
+
+function queryTable(id) {
+	var url = "https://docs.google.com/spreadsheets/d/",
+		selector = '/gviz/tq?&range=',
+	   	queryString = 'B:I';
+
+	var query = new google.visualization.Query(url + id + selector + queryString);
+	query.send(handleQueryResponse);
+}
+
+function fillSelect(items) {
+	var sortby_select = document.getElementById("sortby"),
+
+		create_option = function(txt) {
+			var opt = document.createElement("option");
+			opt.text = txt;
+			return opt;
+		};
+
+	items.forEach(function(par, n, arr) {
+		sortby_select.add(create_option(par));
+	});
+}
+
+function onLoad() {
+	queryTable('12XGrtcMRbcKatj3BcTg05JgiyMe_1DbC5PVCh7K18pc');
+	fillSelect(tableOrder);
+}
+
+function redrawStats() {
+	var	showColumns = [0], colors = [];
+
+	tableOrder.forEach(function(par, n, arr) {
+		if(document.getElementById(par).checked) {
+			showColumns.push(n+2)
+		}
+	});
+
+	var view = new google.visualization.DataView(data);
+	view.setColumns(showColumns);
+
+	showColumns.slice(1)
+			.forEach(function(n, i, arr) {
+				colors.push(tableColors[n-2]);
+			});
+
+	var chartDivId = document.getElementById('chart_div');
+	var chart = new google.visualization.ColumnChart(chartDivId),
+		options = {title: 'Статистика ВТФ', width: 1280, colors: colors};
+	chart.draw(view, options);
+}
+
+function handleQueryResponse(response) {
+	if (response.isError()) {
+		alert('Error in query: '
+				+ response.getMessage() + ' '
+				+ response.getDetailedMessage());
+		return;
+	}
+
+	data = response.getDataTable();
+	var sortby = document.getElementById("sortby").selectedIndex + 2;
+	console.log(sortby);
+	//sortby = 5;
+	data.sort({column : sortby})
+
+	redrawStats();
+}
+
+</script>
+</head>
+
+<body>
+
+<input type="checkbox" id="age" onclick="redrawStats()">Вік<br>
+<input type="checkbox" id="published" onclick="redrawStats()">
+	Всіх публікацій<br>
+<input type="checkbox" id="cited" onclick="redrawStats()">Всіх посилань<br>
+<input type="checkbox" id="h" onclick="redrawStats()" checked>Індекс Гірша<br>
+<input type="checkbox" id="i5" onclick="redrawStats()">Індекс I5<br>
+<input type="checkbox" id="c5" onclick="redrawStats()">Індекс С5<br>
+
+Сортувати за <select id="sortby"
+	onchange="data.sort(this.selectedIndex + 2); redrawStats();">
+</select>
+
+<div id="chart_div" style="width:900px; height:500px"></div>
+
+</body>
+
+</html>
