@@ -83,7 +83,7 @@ function move_projections(scr_b)
 	var scr_pyx = s.Sy*100 + 160.0, scr_pzy = s.Sz*-100 + 160.0;
 	projy.setAttribute("x2", scr_pyx)
 	xy = proj(s.Sx, 0, 0)
-	x = xy[0], y = xy[1]
+	var x = xy[0], y = xy[1]
 	var scr_pxx = x*100 + 160.0, scr_pxy = y*-100 + 160.0
 	projx.setAttribute("x2", scr_pxx)
 	projx.setAttribute("y2", scr_pxy)
@@ -105,23 +105,21 @@ function move_projections(scr_b)
 	helpxy.setAttribute("y2", scr_b.y)
 }
 
-var trace_add_node = (function() {
-	prev_scr_b = {x:Infinity, y:Infinity}
+var prev_scr_b = {x:Infinity, y:Infinity}
+function trace_add_node(scr_b)
+{
+	var d = trace.getAttribute("d"),
+		// Start a new trace if we are too far away from the old one
+		new_trace = Math.abs(prev_scr_b.x - scr_b.x) > 5.00 &&
+					Math.abs(prev_scr_b.y - scr_b.y) > 5.00
+	
+	// If we are to start a new trace, merely move to its start;
+	// continue the old trace otherwise
+	trace.setAttribute("d", d + (new_trace? " M ":" L ")
+		   					+ scr_b.x + " " + scr_b.y)
 
-	return function(scr_b) {
-		var d = trace.getAttribute("d"),
-			// Start a new trace if we are too far away from the old one
-			new_trace = Math.abs(prev_scr_b.x - scr_b.x) > 5.00 &&
-						Math.abs(prev_scr_b.y - scr_b.y) > 5.00
-		
-		// If we are to start a new trace, merely move to its start;
-		// continue the old trace otherwise
-		trace.setAttribute("d", d + (new_trace? " M ":" L ")
-							+ scr_b.x + " " + scr_b.y)
-
-		prev_scr_b = scr_b
-	}
-})()
+	prev_scr_b = scr_b
+}
 
 this.move_all = function()
 {
@@ -130,6 +128,13 @@ this.move_all = function()
 	correct_depth_order()
 	if(this.trace_on) 
 		trace_add_node(scr_b)
+}
+
+this.clear_trace = function()
+{
+	var xy = proj(s.Sx, s.Sy, s.Sz),
+		scr_x = xy[0]*100 + 160.0, scr_y = xy[1]*-100 + 160.0;
+	trace.setAttribute("d", "M " + scr_x + " " + scr_y)
 }
 
 } // end SpinView
