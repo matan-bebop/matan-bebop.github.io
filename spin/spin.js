@@ -4,7 +4,7 @@
   
 
 
-function Spin(doc) {
+function Spin() {
 
 this.Sx = 0; this.Sy = 0; this.Sz = -1
 
@@ -31,10 +31,9 @@ function cabinet_projector(theta)
 }
 
 
-function SpinView(spin, doc, projector) {
+function SpinView(s, doc, projector) {
 
 this.trace_on = false
-this.s = spin
 
 var proj = projector
 if(typeof proj === 'undefined')
@@ -54,7 +53,7 @@ var bloch_vec = doc.getElementById("bloch-vector"),
 
 function move_bloch_vector()
 {
-	var xy = proj(this.s.Sx, this.s.Sy, this.s.Sz)
+	var xy = proj(s.Sx, s.Sy, s.Sz)
 	var x = xy[0], y = xy[1]
 
 	var scr_bx = 0.9*x*100 + 160.0,
@@ -72,24 +71,24 @@ function move_bloch_vector()
 function correct_depth_order()
 {
 	// Behind or over the XY plane elements?
-	overxy.setAttribute("opacity", 1*(this.s.Sz < 0))
+	overxy.setAttribute("opacity", 1*(s.Sz < 0))
 	// ... the 0z axis?
-	overz.setAttribute("opacity", 1*(this.s.Sx < 0))
+	overz.setAttribute("opacity", 1*(s.Sx < 0))
 	// ... the xy plane projection helper
-	overhelpxy.setAttribute("opacity", 1*(this.s.Sx > 0))
+	overhelpxy.setAttribute("opacity", 1*(s.Sx > 0))
 }
 
 function move_projections(scr_b)
 {
-	var scr_pyx = this.s.Sy*100 + 160.0, scr_pzy = this.s.Sz*-100 + 160.0;
+	var scr_pyx = s.Sy*100 + 160.0, scr_pzy = s.Sz*-100 + 160.0;
 	projy.setAttribute("x2", scr_pyx)
-	xy = proj(this.s.Sx, 0, 0)
+	xy = proj(s.Sx, 0, 0)
 	x = xy[0], y = xy[1]
 	var scr_pxx = x*100 + 160.0, scr_pxy = y*-100 + 160.0
 	projx.setAttribute("x2", scr_pxx)
 	projx.setAttribute("y2", scr_pxy)
 
-	xy = proj(this.s.Sx, this.s.Sy, 0)
+	xy = proj(s.Sx, s.Sy, 0)
 	x = xy[0], y = xy[1]
 	var scr_pxy_x = x*100 + 160.0, scr_pxy_y = y*-100 + 160.0
 
