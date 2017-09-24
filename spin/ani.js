@@ -18,7 +18,6 @@ function animation_step(t) // [t] = ms
 		// Don't move if we were idling for too much, e.g. the window was 
 		// inactive for some time
 		if(W*dt < 0.1) { 
-			console.log(s)
 			s.advance_paulis(dt, this.Wx, this.Wy, this.Wz)
 			sv.move_all()
 		}
@@ -34,7 +33,6 @@ window.requestAnimationFrame(animation_step.bind(this))
 // Here x, y, z give the rotation axis direction; phi is the rotation angle
 this.pulse_seq = function(vs)
 {	
-	console.log(this)
 	function normalize(v)
 	{	
 		len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])
