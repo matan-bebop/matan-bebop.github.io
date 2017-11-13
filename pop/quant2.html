@@ -9,7 +9,7 @@
 <h2> Ч.2: Кіт Шредінґера </h2>
 
 <p>
-У першій частині йшлося про те, що фізичні величини насправді набувають лише значеннь із певного набору.
+У <a href="quant.html"> першій частині </a> йшлося про те, що фізичні величини насправді набувають лише значеннь із певного набору.
 Для прикладу ми брали атом водню, проекція магнітного моменту якого набуває
 лише двох значень.
 Така частинка може слугувати носієм кубіта — квантового аналогу біта.
@@ -133,17 +133,21 @@ window.onload = function() {
 	sv.trace_on = sv1.trace_on = true
 
 	svg_doc.getElementById("svg-qubit").onclick = function() {
-		sv.clear_trace()
-		sa.pulse_seq([{axis:[1,0,0], phi:-Math.PI/2},
-					  {axis:[1,0,0], phi:Math.PI/2}])
+		if(!sa.moving) {
+			sv.clear_trace()
+			sa.pulse_seq([{axis:[1,0,0], phi:-Math.PI/2},
+						  {axis:[1,0,0], phi:Math.PI/2}])
+		}
 	}
 
 	svg_doc1.getElementById("svg-qubit").onclick = function() {
-		s1.Sx = 0; s1.Sy = 0; s1.Sz = -1
-		sv1.clear_trace()
-		sa1.pulse_seq([{axis:[1,0,0], phi:-Math.PI/2},
-				      {axis:[0,0,1], phi:Math.PI/4},
-					  {axis:[1,0,0], phi:Math.PI/2}])
+		if(!sa1.moving) {
+			s1.Sx = 0; s1.Sy = 0; s1.Sz = -1
+			sv1.clear_trace()
+			sa1.pulse_seq([{axis:[1,0,0], phi:-Math.PI/2},
+						  {axis:[0,0,1], phi:Math.PI/4},
+						  {axis:[1,0,0], phi:Math.PI/2}])
+		}
 	}
 }
 

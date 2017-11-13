@@ -1,3 +1,7 @@
+SpinAnimator.prototype = {
+	get moving() { return this.Wx != 0 || this.Wy !=0 || this.Wz != 0 }
+}
+
 function SpinAnimator(s, sv, W) {
 
 this.Wx = this.Wy = this.Wz = 0
@@ -12,7 +16,7 @@ function animation_step(t) // [t] = ms
 	var dt
 
 	if (!prev_t) prev_t = t
-	else if (this.Wx != 0 || this.Wy != 0 || this.Wz != 0){
+	else if (this.moving){
 		dt = t - prev_t; prev_t = t
 
 		// Don't move if we were idling for too much, e.g. the window was 
