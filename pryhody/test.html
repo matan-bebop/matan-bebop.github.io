@@ -1,0 +1,11 @@
+<div id="solution"></div>
+<script src="swipl-bundle.js"></script>
+<script>
+  (async () => {
+    const swipl = await SWIPL({ arguments: ["-q"] });
+    const query = "member(X, [a, b, c]). writeln(hahaha).";
+    const solutionElement = document.getElementById("solution");
+    const firstSolution = swipl.prolog.query(query).once().X;
+    solutionElement.textContent = firstSolution;
+  })();
+</script>
