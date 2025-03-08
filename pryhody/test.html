@@ -3,9 +3,11 @@
 <script>
   (async () => {
     const swipl = await SWIPL({ arguments: ["-q"] });
-    const query = "member(X, [a, b, c]). writeln(hahaha).";
+    const query = "можна(X).";
     const solutionElement = document.getElementById("solution");
-    const firstSolution = swipl.prolog.query(query).once().X;
+    const firstSolution =
+	 swiple.prolog.consult("pilou32.qlf").once()
+	.swiple.prolog.query(query).once().X;
     solutionElement.textContent = firstSolution;
   })();
 </script>
