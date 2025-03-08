@@ -1,11 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF8">
+  <title>Тест WASM SWI-Прологу</title>
+</head>
+<body>
+
 <div id="solution"></div>
 <script src="swipl-bundle.js"></script>
 <script>
+  var swipl;
+  var options = { };
   (async () => {
-    const swipl = await SWIPL({ arguments: ["-q"] });
-    const query = "member(X, [a, b, c]). writeln(hahaha).";
+    swipl = await SWIPL({ arguments: ["-q"] });
+    await swipl.prolog.consult("pilou32.qlf");
+    const query = "можна(X).";
     const solutionElement = document.getElementById("solution");
     const firstSolution = swipl.prolog.query(query).once().X;
     solutionElement.textContent = firstSolution;
   })();
 </script>
+
+</body>
+</html>
