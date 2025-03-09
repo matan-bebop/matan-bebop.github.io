@@ -7,14 +7,14 @@
 <body>
 
 <div id="solution"></div>
-<script src="swipl-bundle.js"></script>
+<script src="swipl-bundle-devel.js"></script>
 <script>
   var swipl;
   var options = { };
   (async () => {
     swipl = await SWIPL({ arguments: ["-q"] });
-    await swipl.prolog.consult("pilou32.qlf");
-    const query = "можна(X).";
+    /* await swipl.prolog.consult("pilou-web.qlf"); */
+    const query = "memberchk(X, [dupa, pupa]).";
     const solutionElement = document.getElementById("solution");
     const firstSolution = swipl.prolog.query(query).once().X;
     solutionElement.textContent = firstSolution;
