@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF8">
   <title>Тест WASM SWI-Прологу</title>
 </head>
+
 <body>
 
 <div id="solution"></div>
+<br>
+<div style="display:flex">
+  <div style="flex-grow:1">: </div>
+  <input autofocus onfocusout="refocus()" type="text" id="input"
+         style="width:100%">
+</div>
+
 <script src="swipl-bundle-devel.js"></script>
+
 <script>
-  var swipl;
-  var options = { };
-  (async () => {
-    swipl = await SWIPL({ arguments: ["-q"] });
-    /* await swipl.prolog.consult("pilou-web.qlf"); */
-    const query = "memberchk(X, [dupa, pupa]).";
-    const solutionElement = document.getElementById("solution");
-    const firstSolution = swipl.prolog.query(query).once().X;
-    solutionElement.textContent = firstSolution;
-  })();
+
+var swipl;
+var options = { };
+
+(async () => {
+  swipl = await SWIPL({ arguments: ["-q"] });
+  /* await swipl.prolog.consult("pilou-web.qlf"); */
+  const query = "memberchk(X, [dupa, pupa]).";
+  const solutionElement = document.getElementById("solution");
+  const firstSolution = swipl.prolog.query(query).once().X;
+  solutionElement.textContent = firstSolution;
+})();
+
+input = document.getElementByID("input");
+function refocus() { setTimeout(function () { input.focus() }, 0) };
+
 </script>
 
 </body>
