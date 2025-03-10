@@ -10,10 +10,12 @@
 
 <div id="solution"></div>
 <br>
-<div style="display:flex">
+<div id="prompt_line" style="display:flex">
   <div style="flex-grow:1">: </div>
-  <input autofocus onfocusout="refocus()" type="text" id="input"
-         style="width:100%">
+  <input type="text" id="input"
+	 onkeypress='if(event.key == "Enter") { enter() }'
+	 autofocus onfocusout="refocus()"
+	 style="width:100%">
 </div>
 
 <script src="swipl-bundle-devel.js"></script>
@@ -23,17 +25,34 @@
 var swipl;
 var options = { };
 
+const output = document.getElementById("solution");
+
 (async () => {
   swipl = await SWIPL({ arguments: ["-q"] });
   /* await swipl.prolog.consult("pilou-web.qlf"); */
   const query = "memberchk(X, [dupa, pupa]).";
-  const solutionElement = document.getElementById("solution");
   const firstSolution = swipl.prolog.query(query).once().X;
-  solutionElement.textContent = firstSolution;
+  output.textContent = firstSolution;
 })();
 
+prompt_line = document.getElementByID("prompt_line");
+
 input = document.getElementByID("input");
-function refocus() { setTimeout(function () { input.focus() }, 0) };
+input.value = "dfdfdf";
+
+function refocus() { setTimeout(function () { input.focus() }, 0) }
+
+function enter() {
+  paragraph(input.value)
+  input.value = ""
+}
+
+function paragraph(text) {
+  const	new_par = document.createElement("p")
+  new_par.innerText = ": " + text
+  document.body.insertBefore(new_par, prompt_line)
+  prompt_line.scrollIntoView()
+}
 
 </script>
 
