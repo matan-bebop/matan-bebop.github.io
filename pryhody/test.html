@@ -53,7 +53,7 @@ function paragraph(text) {
   const	new_par = document.createElement("p")
   new_par.innerText = ": " + text
   document.body.insertBefore(new_par, prompt_line)
-  prompt_line.scrollIntoView()
+  window.scrollTo(0, document.body.scrollHeight)
 }
 
 </script>
