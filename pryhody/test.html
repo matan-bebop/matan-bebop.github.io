@@ -19,7 +19,6 @@
 	 autofocus onfocusout="refocus()"
 	 style="width:100%">
 </div>
-<div id="dummy" style="height:5em">
 
 <script src="swipl-bundle-devel.js"></script>
 
@@ -38,10 +37,9 @@ const output = document.getElementById("solution");
   output.textContent = firstSolution;
 })();
 
-prompt_line = document.getElementByID("prompt_line")
-dummy = document.getElementByID("dummy")
+prompt_line = document.getElementById("prompt_line")
 
-input = document.getElementByID("input")
+input = document.getElementById("input")
 
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
@@ -50,17 +48,17 @@ function enter() {
   input.value = ""
 }
 
+/* Fucking iPhone scrolls about 5em before the element when the page is longer
+   than one screen */
+if(navigator.userAgent.includes("iPhone")) {
+  prompt_line.style.paddingBottom = "5em"
+}
+
 function paragraph(text) {
   const	new_par = document.createElement("p")
   new_par.innerText = ": " + text
   document.body.insertBefore(new_par, prompt_line)
-  if(!navigator.userAgent.includes("iPhone")) {
-    prompt_line.scrollIntoView(false)
-  } else {
-    /* fucking iPhone scrolls about 5em before the element when the page is 
-       longer than one screen */ 
-    dummy.scrollIntoView(false)
-  }
+  prompt_line.scrollIntoView(false)
 }
 
 </script>
