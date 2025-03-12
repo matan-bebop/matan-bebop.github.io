@@ -10,8 +10,7 @@
 
 <body>
 
-<div id="solution"></div>
-<br>
+<div id="output"></div>
 <div id="prompt_line" style="display:flex">
   <div style="flex-grow:1">: </div>
   <input type="text" id="input"
@@ -25,26 +24,31 @@
 <script>
 
 var swipl;
-var options = { };
-
-const output = document.getElementById("solution");
+var swipl_options = {
+  arguments: ["-q"],
+  on_output: function(msg,stream) {
+		console.log(msg)
+		if (stream == "stdout") { paragraph(msg) }
+	     }
+};
 
 (async () => {
-  swipl = await SWIPL({ arguments: ["-q"] });
-  /* await swipl.prolog.consult("pilou-web.qlf"); */
-  const query = "memberchk(X, [dupa, pupa]).";
-  const firstSolution = swipl.prolog.query(query).once().X;
-  output.textContent = firstSolution;
+  swipl = await SWIPL(swipl_options)
+  await swipl.prolog.load_scripts()
+  await swipl.prolog.consult("pilou-web.qlf")
+  /* потрібно зробити ввід для web у repl */
+  //await swipl.prolog.query("грати_спочатку.").once()
+  swipl.prolog.query("зайти(двір).").once()
 })();
 
+const output = document.getElementById("output");
 prompt_line = document.getElementById("prompt_line")
-
 input = document.getElementById("input")
 
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
 function enter() {
-  paragraph(input.value)
+  paragraph(": " + input.value)
   input.value = ""
 }
 
@@ -56,12 +60,28 @@ if(navigator.userAgent.includes("iPhone")) {
 
 function paragraph(text) {
   const	new_par = document.createElement("p")
-  new_par.innerText = ": " + text
+  new_par.innerText = text
   document.body.insertBefore(new_par, prompt_line)
   prompt_line.scrollIntoView(false)
 }
 
 </script>
+
+
+<script type="text/prolog" id="aux.pl">
+
+/* Варʼянти звідси випадають першими за варʼянти з .qlf-файлу, див. процедуру
+   завантаження Прологу і його програм. */
+
+web(true).
+
+</script>
+
+
+<!-- .qlf does not seem to load with load_scripts(), so I load it manually above
+<script type="text/prolog" src="pilou-web.qlf"></script>
+-->
+
 
 </body>
 </html>
