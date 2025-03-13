@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF8">
+  <title>Пригода Микита Пилиповича</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body>
+
+<div id="output"></div>
+<div id="prompt_line" style="display:flex">
+  <div style="flex-grow:1">: </div>
+  <input type="text" id="input"
+	 onkeypress='if(event.key == "Enter") { enter() }'
+	 autofocus onfocusout="refocus()"
+	 style="width:100%">
+</div>
+
+<script src="../swipl-bundle-devel.js"></script>
+
+<script>
+
+let resolve_input = undefined
+var promise_read_input = new Promise(r => {resolve_input = r})
+
+var swipl;
+var swipl_options = {
+  arguments: ["-q"],
+  on_output: function(msg,stream) {
+		console.log(msg)
+		if (stream == "stdout") { paragraph(msg) }
+	     }
+};
+
+(async () => {
+  swipl = await SWIPL(swipl_options)
+  await swipl.prolog.consult("pylypovych-web.qlf")
+  await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
+  /* потрібно зробити ввід для web у repl */
+  await swipl.prolog.forEach("грати.")
+  paragraph("Ось і казочці кінець.")
+  block()
+})();
+
+const output = document.getElementById("output");
+prompt_line = document.getElementById("prompt_line")
+input = document.getElementById("input")
+
+function refocus() { setTimeout(function () { input.focus() }, 0) }
+
+function enter() {
+  resolve_input(input.value)
+  promise_read_input = new Promise(r => {resolve_input = r})
+  paragraph(": " + input.value)
+  input.value = ""
+}
+
+function block() {
+  input.style.display = "block"
+}
+
+/* Fucking iPhone scrolls about 5em before the element when the page is longer
+   than one screen */
+if(navigator.userAgent.includes("iPhone")) {
+  prompt_line.style.paddingBottom = "5em"
+}
+
+function paragraph(text) {
+  const	new_par = document.createElement("p")
+  new_par.innerText = text
+  document.body.insertBefore(new_par, prompt_line)
+  prompt_line.scrollIntoView(false)
+}
+
+</script>
+
+
+<script type="text/prolog" id="aux.pl">
+
+/* Завантажується після .qlf-модуля і переозначує потрібні предикати */
+
+зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
+
+</script>
+
+
+<!-- .qlf does not seem to load with load_scripts(), so I load it manually above
+<script type="text/prolog" src="pilou-web.qlf"></script>
+-->
+
+
+</body>
+</html>
