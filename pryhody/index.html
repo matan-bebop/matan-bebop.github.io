@@ -23,6 +23,9 @@
 
 <script>
 
+let resolve_input = undefined
+var promise_read_input = new Promise(r => {resolve_input = r})
+
 var swipl;
 var swipl_options = {
   arguments: ["-q"],
@@ -34,11 +37,12 @@ var swipl_options = {
 
 (async () => {
   swipl = await SWIPL(swipl_options)
-  await swipl.prolog.load_scripts()
   await swipl.prolog.consult("pilou-web.qlf")
+  await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
   /* потрібно зробити ввід для web у repl */
-  //await swipl.prolog.query("грати_спочатку.").once()
-  swipl.prolog.query("зайти(двір).").once()
+  await swipl.prolog.forEach("грати_спочатку.")
+  paragraph("Ось і казочці кінець.") /* В Пілу не виконується */
+  block()
 })();
 
 const output = document.getElementById("output");
@@ -48,8 +52,14 @@ input = document.getElementById("input")
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
 function enter() {
+  resolve_input(input.value)
+  promise_read_input = new Promise(r => {resolve_input = r})
   paragraph(": " + input.value)
   input.value = ""
+}
+
+function block() {
+  input.style.display = "block"
 }
 
 /* Fucking iPhone scrolls about 5em before the element when the page is longer
@@ -70,10 +80,9 @@ function paragraph(text) {
 
 <script type="text/prolog" id="aux.pl">
 
-/* Варʼянти звідси випадають першими за варʼянти з .qlf-файлу, див. процедуру
-   завантаження Прологу і його програм. */
+/* Завантажується після .qlf-модуля і переозначує потрібні предикати */
 
-web(true).
+зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
 
 </script>
 
