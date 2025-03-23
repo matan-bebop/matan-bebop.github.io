@@ -52,6 +52,12 @@ input = document.getElementById("input")
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
 function enter() {
+  /* It can be hard to input proper apostrophe symbol, and it seems that is
+     merely impossible on iPhone. So, first, change every apostrophe-like
+     symbol to proper apostrophe */
+  /* TODO: properly treat quoted words and move this to Prolog, possibly by
+     compiling it with PCRE. */
+  input.value = input.value.replace(/[‘’’'"]/g, "ʼ")
   resolve_input(input.value)
   promise_read_input = new Promise(r => {resolve_input = r})
   paragraph(": " + input.value)
