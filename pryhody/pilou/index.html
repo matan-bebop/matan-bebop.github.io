@@ -37,11 +37,12 @@ var swipl_options = {
 
 (async () => {
   swipl = await SWIPL(swipl_options)
+  /* First re-define the input predicate as well as the re-consulting of the
+     game predicates (see the aux.pl inline script below) */
+  await swipl.prolog.load_scripts()
   await swipl.prolog.consult("pilou-web.qlf")
-  await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
-  /* потрібно зробити ввід для web у repl */
   await swipl.prolog.forEach("грати_спочатку.")
-  paragraph("Ось і казочці кінець.") /* В Пілу не виконується */
+  paragraph("Ось і казочці кінець.") /* TODO: halt -> обіцянка вилітає */
   block()
 })();
 
@@ -86,9 +87,14 @@ function paragraph(text) {
 
 <script type="text/prolog" id="aux.pl">
 
-/* Завантажується після .qlf-модуля і переозначує потрібні предикати */
+/* Завантажується перед .qlf-модулем і переозначує потрібні предикати */
 
-зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
+:- multifile зчитати_рядок/1, підновити_предикати/0.
+
+зчитати_рядок(Стр) :- !, Promise := promise_read_input, await(Promise, Стр).
+
+підновити_предикати :- !, consult("pilou-web.qlf").
+% Перезавантаження вище асинхронне, бо цикл гри запускається через forEach
 
 </script>
 
