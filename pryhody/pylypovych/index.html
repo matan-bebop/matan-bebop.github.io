@@ -3,14 +3,14 @@
 
 <head>
   <meta charset="UTF8">
-  <title>Пригода Микита Пилиповича</title>
+  <title>Пригода Микити Пилиповича</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
 <body>
 
-<div id="output"></div>
+<p></p>
 <div id="prompt_line" style="display:flex">
   <div style="flex-grow:1">: </div>
   <input type="text" id="input"
@@ -30,9 +30,20 @@ var swipl;
 var swipl_options = {
   arguments: ["-q"],
   on_output: function(msg,stream) {
-		console.log(msg)
-		if (stream == "stdout") { paragraph(msg) }
-	     }
+    console.log(msg)
+    if (stream == "stdout") {
+      const pars = document.getElementsByTagName("p")
+      const last_par = pars[pars.length-1]
+      if(last_par.textContent != "") {
+        // SWIPL only flushes stdout on newline. So if we don't
+        // have a fresh para, we also need to outpu a newline to
+        // the current para.
+        const br = document.createElement("br")
+        last_par.appendChild(br)
+      }
+      last_par.append(msg)
+    }
+  }
 };
 
 (async () => {
@@ -56,6 +67,7 @@ function enter() {
   promise_read_input = new Promise(r => {resolve_input = r})
   paragraph(": " + input.value)
   input.value = ""
+  paragraph("")
 }
 
 function block() {
@@ -83,6 +95,10 @@ function paragraph(text) {
 /* Завантажується після .qlf-модуля і переозначує потрібні предикати */
 
 зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
+
+пустий_рядок :-
+	nl, % Заставити SWIPL вилити буфер виводу
+	_ := paragraph("").
 
 </script>
 
