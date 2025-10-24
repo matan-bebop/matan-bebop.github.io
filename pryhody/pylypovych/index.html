@@ -46,15 +46,17 @@ var swipl_options = {
   }
 };
 
-(async () => {
+async function new_game()
+{
   swipl = await SWIPL(swipl_options)
   await swipl.prolog.consult("pylypovych-web.qlf")
   await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
-  /* потрібно зробити ввід для web у repl */
-  await swipl.prolog.forEach("грати.")
-  paragraph("Ось і казочці кінець.")
-  block()
-})();
+  await p1.catch(error => console.log(error))
+  await swipl.prolog.forEach("грати.").catch(error => block())
+  // Чому я все одно отримую Unhandled promise rejection по ванільному halt?
+}
+
+new_game();
 
 const output = document.getElementById("output");
 prompt_line = document.getElementById("prompt_line")
@@ -99,6 +101,8 @@ function paragraph(text) {
 пустий_рядок :-
 	nl, % Заставити SWIPL вилити буфер виводу
 	_ := paragraph("").
+
+abort :- оповідь("Не підтримується у веб-версії.").
 
 </script>
 
