@@ -51,7 +51,6 @@ async function new_game()
   swipl = await SWIPL(swipl_options)
   await swipl.prolog.consult("pylypovych-web.qlf")
   await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
-  await p1.catch(error => console.log(error))
   await swipl.prolog.forEach("грати.").catch(error => block())
   // Чому я все одно отримую Unhandled promise rejection по ванільному halt?
 }
