@@ -10,7 +10,7 @@
 
 <body>
 
-<div id="output"></div>
+<p></p>
 <div id="prompt_line" style="display:flex">
   <div style="flex-grow:1">: </div>
   <input type="text" id="input"
@@ -30,9 +30,20 @@ var swipl;
 var swipl_options = {
   arguments: ["-q"],
   on_output: function(msg,stream) {
-		console.log(msg)
-		if (stream == "stdout") { paragraph(msg) }
-	     }
+    console.log(msg)
+    if (stream == "stdout") {
+      const pars = document.getElementsByTagName("p")
+      const last_par = pars[pars.length-1]
+      if(last_par.textContent != "") {
+        // SWIPL only flushes stdout on newline. So if we don't
+        // have a fresh para, we also need to outpu a newline to
+        // the current para.
+        const br = document.createElement("br")
+        last_par.appendChild(br)
+      }
+      last_par.append(msg)
+    }
+  }
 };
 
 (async () => {
@@ -42,8 +53,6 @@ var swipl_options = {
   await swipl.prolog.load_scripts()
   await swipl.prolog.consult("pilou-web.qlf")
   await swipl.prolog.forEach("грати_спочатку.")
-  paragraph("Ось і казочці кінець.") /* TODO: halt -> обіцянка вилітає */
-  block()
 })();
 
 const output = document.getElementById("output");
@@ -63,6 +72,7 @@ function enter() {
   promise_read_input = new Promise(r => {resolve_input = r})
   paragraph(": " + input.value)
   input.value = ""
+  paragraph("")
 }
 
 function block() {
@@ -89,12 +99,15 @@ function paragraph(text) {
 
 /* Завантажується перед .qlf-модулем і переозначує потрібні предикати */
 
-:- multifile зчитати_рядок/1, підновити_предикати/0.
+:- multifile зчитати_рядок/1, пустий_рядок/0.
 
 зчитати_рядок(Стр) :- !, Promise := promise_read_input, await(Promise, Стр).
 
-підновити_предикати :- !, consult("pilou-web.qlf").
-% Перезавантаження вище асинхронне, бо цикл гри запускається через forEach
+пустий_рядок :- !,
+	nl, % Заставити SWIPL вилити буфер виводу
+	_ := paragraph("").
+
+abort :- !, оповідь("Не підтримується у веб-версії.").
 
 </script>
 
