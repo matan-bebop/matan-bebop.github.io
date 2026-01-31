@@ -48,6 +48,29 @@ async function interpret(prompt, commands, key) {
   console.log(answer)
 }
 
+
+is_actionless_schema = {
+  "type": "json_schema",
+  "json_schema": { "schema": {
+    "type": "object",
+    "properties": { "чи_дія": { "type": "integer"} },
+    "required": ["чи_дія"]
+  },
+  "name": "is_actionless_schema",
+  "strict": true
+}}
+
+async function is_actionless(part, prompt, key) {
+  const messages = [
+    {"role": "system", "content": "Оціни від 0 до 100, чи містить частина запиту реальний заклик до дії, чи є просто риторичною фігурою мовлення."},
+    {"role": "user", "content": "Частина: " + part},
+    {"role": "user", "content": "Запит: " + prompt}
+  ]
+  answer = await ask_mistral(messages, is_actionless_schema, key)
+  console.log(answer)
+}
+
+
 split_schema = {
   "type": "json_schema",
   "json_schema": { "schema": { "properties": {
@@ -67,7 +90,7 @@ split_schema = {
 
 async function split(prompt, key) {
   const messages = [
-    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Намагайся не перефразовувати."},
+    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Не перефразовуй."},
     {"role": "user", "content": "Запит: " + prompt}
   ]
   return await ask_mistral(messages, split_schema, key)
