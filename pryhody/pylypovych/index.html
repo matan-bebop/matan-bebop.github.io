@@ -6,17 +6,24 @@
   <title>Пригода Микити Пилиповича</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style> input, label, textarea {font-family: serif} </style>
 </head>
 
 <body>
 
 <p></p>
-<div id="prompt_line" style="display:flex">
+<div id="prompt_line" style="display:flex; align-items: baseline">
   <div style="flex:none">Внутрішній голос:&nbsp</div>
-  <input type="text" id="input"
+  <!-- Safari на айфоні не вирівнює по тексту без div для input. А новіший все
+       одно скаче. Можна було б спробувати завжди мати &nbsp у формочці, це
+       має допомогати і для новішого айфонового Safari. -->
+  <div style="width:100%">
+    <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
-	 style="width:100%">
+	 style="width:100%; font-size: 1rem">
+  </div>
+  <div style="flex:none; visibility:hidden">xx</div>
 </div>
 
 <script src="../swipl-bundle-devel.js"></script>
@@ -86,10 +93,10 @@ function capitalize(s) { return s && s[0].toUpperCase() + s.slice(1) }
 /* Ще треба б додавати в кінці крапочку, як нема. Але тоді парсер має
    розуміти команди з крапкою в кінці, щоби не плутати гравця */
 
-/* Fucking iPhone scrolls about 5em before the element when the page is longer
-   than one screen */
+/* Fucking iPhone scrolls about 5-6em before the element when the page is longer
+   than one screen. Moreover, that amount depends on the input box font size. */
 if(navigator.userAgent.includes("iPhone")) {
-  prompt_line.style.paddingBottom = "5em"
+  prompt_line.style.paddingBottom = "15ex"
 }
 
 function paragraph(text) {
