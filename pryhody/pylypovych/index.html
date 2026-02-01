@@ -12,7 +12,7 @@
 
 <p></p>
 <div id="prompt_line" style="display:flex">
-  <div style="flex-grow:1">: </div>
+  <div style="flex:none">Внутрішній голос:&nbsp</div>
   <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
@@ -73,7 +73,7 @@ function enter() {
 
   resolve_input(input.value)
   promise_read_input = new Promise(r => {resolve_input = r})
-  paragraph(": " + input.value)
+  paragraph("Внутрішній голос: " + capitalize(input.value))
   input.value = ""
   paragraph("")
 }
@@ -81,6 +81,10 @@ function enter() {
 function block() {
   input.style.display = "block"
 }
+
+function capitalize(s) { return s && s[0].toUpperCase() + s.slice(1) }
+/* Ще треба б додавати в кінці крапочку, як нема. Але тоді парсер має
+   розуміти команди з крапкою в кінці, щоби не плутати гравця */
 
 /* Fucking iPhone scrolls about 5em before the element when the page is longer
    than one screen */
