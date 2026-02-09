@@ -12,18 +12,12 @@
 <body>
 
 <p></p>
-<div id="prompt_line" style="display:flex; align-items: baseline">
+<div id="prompt_line" style="display:flex; align-items: center">
   <div style="flex:none">Внутрішній голос:&nbsp</div>
-  <!-- Safari на айфоні не вирівнює по тексту без div для input. А новіший все
-       одно скаче. Можна було б спробувати завжди мати &nbsp у формочці, це
-       має допомогати і для новішого айфонового Safari. -->
-  <div style="width:100%">
-    <input type="text" id="input"
+  <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
 	 style="width:100%; font-size: 1rem">
-  </div>
-  <div style="flex:none; visibility:hidden">xx</div>
 </div>
 
 <script src="../swipl-bundle-devel.js"></script>
