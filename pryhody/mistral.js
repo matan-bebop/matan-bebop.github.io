@@ -16,7 +16,7 @@ async function ask_mistral(messages, answer_schema, key) {
     body: prompt_string 
   });
   const response_json = await response.json();
-  return response_json.choices[0].message.content
+  return JSON.parse(response_json.choices[0].message.content)
 }
 
 
@@ -44,8 +44,7 @@ async function interpret(prompt, commands, key) {
     {"role": "user", "content": "Запит: " + prompt},
     {"role": "user", "content": "Команди: " + commands} 
   ]
-  answer = await ask_mistral(messages, rank_schema, key)
-  console.log(answer)
+  return await ask_mistral(messages, rank_schema, key)
 }
 
 
@@ -66,8 +65,7 @@ async function is_actionless(part, prompt, key) {
     {"role": "user", "content": "Частина: " + part},
     {"role": "user", "content": "Запит: " + prompt}
   ]
-  answer = await ask_mistral(messages, is_actionless_schema, key)
-  console.log(answer)
+  return await ask_mistral(messages, is_actionless_schema, key)
 }
 
 
