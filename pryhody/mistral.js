@@ -23,13 +23,13 @@ async function ask_mistral(messages, answer_schema, key) {
 rank_schema = {
   "type": "json_schema",
   "json_schema": { "schema": { "properties": {
-    "команди": { "type": "array", "items": {
+    "komandy": { "type": "array", "items": {
         "type": "object",
         "properties": {
-          "команда": {"type": "string"},
-          "оцінка": {"type": "integer"}
+          "komanda": {"type": "string"},
+          "ocinka": {"type": "integer"}
         },
-        "required": ["команда", "оцінка"]
+        "required": ["komanda", "ocinka"]
       }
     }
   }},
@@ -52,8 +52,8 @@ is_actionless_schema = {
   "type": "json_schema",
   "json_schema": { "schema": {
     "type": "object",
-    "properties": { "чи_дія": { "type": "integer"} },
-    "required": ["чи_дія"]
+    "properties": { "chy_dija": { "type": "integer"} },
+    "required": ["chy_dija"]
   },
   "name": "is_actionless_schema",
   "strict": true
@@ -72,12 +72,12 @@ async function is_actionless(part, prompt, key) {
 split_schema = {
   "type": "json_schema",
   "json_schema": { "schema": { "properties": {
-    "частини": { "type": "array", "items": {
+    "chastyny": { "type": "array", "items": {
         "type": "object",
         "properties": {
-          "дія": {"type": "string"},
+          "dija": {"type": "string"},
         },
-        "required": ["дія"]
+        "required": ["dija"]
       }
     }
   }},
