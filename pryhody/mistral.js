@@ -88,7 +88,7 @@ split_schema = {
 
 async function split(prompt, key) {
   const messages = [
-    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Не перефразовуй."},
+    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Не виділяй частини без дієслова. Не перефразовуй."},
     {"role": "user", "content": "Запит: " + prompt}
   ]
   return await ask_mistral(messages, split_schema, key)
