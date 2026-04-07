@@ -22,6 +22,7 @@
 </div>
 
 <script src="../swipl-bundle-devel.js"></script>
+<script src="../mistral.js"></script>
 
 <script>
 
@@ -48,13 +49,21 @@ var swipl_options = {
 async function new_game()
 {
   swipl = await SWIPL(swipl_options)
+
   await swipl.prolog.consult("pylypovych-web.qlf")
+  await swipl.prolog.consult("mistral.pl")
   await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
+
+  const url_params = new URLSearchParams(window.location.search)
+  if(mistral_key = url_params.get("key"))
+    await swipl.prolog.forEach('assertz(мм_ключ("' + mistral_key + '")).')
+
   await swipl.prolog.forEach("грати.").catch(error => block())
   // Чому я все одно отримую Unhandled promise rejection по ванільному halt?
 }
 
 new_game();
+
 
 const output = document.getElementById("output");
 prompt_line = document.getElementById("prompt_line")
@@ -118,6 +127,10 @@ abort :- оповідь("Не підтримується у веб-версії.
 
 <!-- .qlf does not seem to load with load_scripts(), so I load it manually above
 <script type="text/prolog" src="pilou-web.qlf"></script>
+-->
+
+<!-- This does not load as well. Why?
+<script type="text/prolog" id="mistral.pl" src="mistral.pl"></script>
 -->
 
 
