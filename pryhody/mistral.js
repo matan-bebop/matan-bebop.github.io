@@ -13,39 +13,45 @@ async function ask_mistral(messages, answer_schema, key) {
       "Accept": "application/json",
       "Authorization": "Bearer " + key,
     },
-    body: prompt_string 
+    body: prompt_string
   });
   const response_json = await response.json();
   return JSON.parse(response_json.choices[0].message.content)
 }
 
 
-rank_schema = {
-  "type": "json_schema",
-  "json_schema": { "schema": { "properties": {
-    "komandy": { "type": "array", "items": {
-        "type": "object",
-        "properties": {
-          "komanda": {"type": "string"},
-          "ocinka": {"type": "integer"}
-        },
-        "required": ["komanda", "ocinka"]
-      }
-    }
-  }},
-  "name": "rank_schema",
-  "strict": true
-  }
+function rank_schema(commands)
+{
+  const r_sch = {
+    "type": "json_schema",
+    "json_schema": { "schema": {
+       "type": "object",
+       "properties": {},
+       "required": []
+    },
+    "name": "rank_schema",
+    "strict": true
+  }}
+
+  let kk = r_sch.json_schema.schema.properties,
+      rr = r_sch.json_schema.schema.required
+
+  commands.forEach((s) => { kk[s] = {"type": "integer"}; rr.push(s)})
+
+  return r_sch
 }
 
 async function interpret(prompt, commands, key) {
   const messages = [
-    {"role": "system", "content": "Оціни від 0 до 100, наскільки підходять команди до запиту користувача."},
-    {"role": "user", "content": "Запит: " + prompt},
-    {"role": "user", "content": "Команди: " + commands} 
+    {"role": "system", "content": "Оціни від 0 до 100, наскільки підходять команди до запиту користувача. Надавай перевагу найбільш повним командам, які найкраще передають інформацію з запиту:\n- Надавай перевагу командам з тими ж прислівниками і з такими ж відмінками предмету, як у запиті\n- Врахуй, що всієї інформації як у запиті, в командах може і не бути\n- Неповні команди містять символ '…' в кінці, їх оцінюй *так само високо* як коли б вони були б повними\n- Команди не потрібно продовжувати у відповіді!\n- Команди, що не містять всієї інформації з запиту, а водночас і не мають символу '…' в кінці–теж непоганий вибір, але оцінюй їх понижче\n- **Ніколи** не додавай нових властивостей до JSON Scheme, яка задає формат відповіді!"},
+    {"role": "user", "content": "Запит: " + prompt}
   ]
-  console.log(messages)
-  return await ask_mistral(messages, rank_schema, key)
+  const resp = await ask_mistral(messages, rank_schema(commands), key)
+  // SWI-Prolog 9 не вміє в кирилицю в назвах ключів в JSON, тому
+  const ret = Object.keys(resp).map((k) => {const d = {};
+                                       d.komanda = k; d.ocinka = resp[k];
+                                       return d})
+  return ret
 }
 
 
