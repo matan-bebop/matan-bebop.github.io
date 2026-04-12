@@ -16,20 +16,20 @@ async function ask_mistral(messages, answer_schema, key) {
     body: prompt_string 
   });
   const response_json = await response.json();
-  return response_json.choices[0].message.content
+  return JSON.parse(response_json.choices[0].message.content)
 }
 
 
 rank_schema = {
   "type": "json_schema",
   "json_schema": { "schema": { "properties": {
-    "команди": { "type": "array", "items": {
+    "komandy": { "type": "array", "items": {
         "type": "object",
         "properties": {
-          "команда": {"type": "string"},
-          "оцінка": {"type": "integer"}
+          "komanda": {"type": "string"},
+          "ocinka": {"type": "integer"}
         },
-        "required": ["команда", "оцінка"]
+        "required": ["komanda", "ocinka"]
       }
     }
   }},
@@ -44,8 +44,7 @@ async function interpret(prompt, commands, key) {
     {"role": "user", "content": "Запит: " + prompt},
     {"role": "user", "content": "Команди: " + commands} 
   ]
-  answer = await ask_mistral(messages, rank_schema, key)
-  console.log(answer)
+  return await ask_mistral(messages, rank_schema, key)
 }
 
 
@@ -53,8 +52,8 @@ is_actionless_schema = {
   "type": "json_schema",
   "json_schema": { "schema": {
     "type": "object",
-    "properties": { "чи_дія": { "type": "integer"} },
-    "required": ["чи_дія"]
+    "properties": { "chy_dija": { "type": "integer"} },
+    "required": ["chy_dija"]
   },
   "name": "is_actionless_schema",
   "strict": true
@@ -66,20 +65,19 @@ async function is_actionless(part, prompt, key) {
     {"role": "user", "content": "Частина: " + part},
     {"role": "user", "content": "Запит: " + prompt}
   ]
-  answer = await ask_mistral(messages, is_actionless_schema, key)
-  console.log(answer)
+  return await ask_mistral(messages, is_actionless_schema, key)
 }
 
 
 split_schema = {
   "type": "json_schema",
   "json_schema": { "schema": { "properties": {
-    "частини": { "type": "array", "items": {
+    "chastyny": { "type": "array", "items": {
         "type": "object",
         "properties": {
-          "дія": {"type": "string"},
+          "dija": {"type": "string"},
         },
-        "required": ["дія"]
+        "required": ["dija"]
       }
     }
   }},
@@ -90,7 +88,7 @@ split_schema = {
 
 async function split(prompt, key) {
   const messages = [
-    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Не перефразовуй."},
+    {"role": "system", "content": "Розбий запит користувача на частини, кожна з яких описує окрему дію. Не розділяй вже виділену дію на дієслово і предмети. Не виділяй частини без дієслова. Не перефразовуй."},
     {"role": "user", "content": "Запит: " + prompt}
   ]
   return await ask_mistral(messages, split_schema, key)

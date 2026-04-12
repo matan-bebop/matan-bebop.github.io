@@ -36,10 +36,7 @@ var swipl_options = {
     if (stream == "stdout") {
       const pars = document.getElementsByTagName("p")
       const last_par = pars[pars.length-1]
-      if(last_par.textContent != "") {
-        // SWIPL only flushes stdout on newline. So if we don't
-        // have a fresh para, we also need to outpu a newline to
-        // the current para.
+      if(last_par.textContent != "" && msg.charCodeAt(msg.length-1) == 10) {
         const br = document.createElement("br")
         last_par.appendChild(br)
       }
@@ -111,7 +108,7 @@ function paragraph(text) {
 зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
 
 пустий_рядок :-
-	nl, % Заставити SWIPL вилити буфер виводу
+	flush_output, % Заставити SWIPL вилити буфер виводу
 	_ := paragraph("").
 
 abort :- оповідь("Не підтримується у веб-версії.").
