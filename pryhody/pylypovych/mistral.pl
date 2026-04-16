@@ -2,7 +2,8 @@
 
 
 мм_розбито_на_прості(Запит, СписокПростих) :-
-    мм_ключ(Ключ), Promise := split(Запит, Ключ), await(Promise, Vidpovidj),
+    мм_ключ(Ключ), Promise := split(Запит, Ключ),
+    catch(await(Promise, Vidpovidj), _, fail),
     maplist(dict_dija, Vidpovidj.chastyny, СписокПростих).
 
 dict_dija(Dict, Dict.dija).
@@ -10,7 +11,8 @@ dict_dija(Dict, Dict.dija).
 
 мм_беззмістовне_питання(Частина, Запит) :-
     мм_ключ(Ключ),
-    Promise := is_actionless(Частина, Запит, Ключ), await(Promise, D),
+    Promise := is_actionless(Частина, Запит, Ключ),
+    catch(await(Promise, D), _, fail),
     D.is_real_action < 30.
 
 
@@ -24,7 +26,7 @@ dict_dija(Dict, Dict.dija).
     оповідь("Треба проконсультуватися з ноосферою… "), flush_output,
     maplist(слова_стринг, СловаКоманд, СтрКоманд),
     Promise := interpret(Запит, СтрКоманд, Ключ),
-    await(Promise, Vidpovidj),
+    catch(await(Promise, Vidpovidj), _, fail),
     оповідь("Еее… "), flush_output,
     maplist(dict_variant_pair, Vidpovidj, КомандиОцінки).
 
