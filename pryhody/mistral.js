@@ -55,6 +55,42 @@ async function rank(prompt, commands, key) {
 }
 
 
+choose_schema = {
+  "type": "json_schema",
+  "json_schema": { "schema": { "properties": {
+    "komandy": { "type": "array", "items": {
+        "type": "object",
+        "properties": {
+          "pojasnennja": {"type": "string"},
+          "nomer": {"type": "integer"},
+          "ocinka": {"type": "integer"}
+        },
+        "required": ["pojasnennja", "nomer", "ocinka"]
+      }
+    }
+  }},
+  "name": "rank_schema",
+  "strict": true
+}}
+
+async function choose(prompt, commands, key)
+{
+  let numbered_commands = ""
+  for(let n=0; n < commands.length; n++)
+    numbered_commands += (n+1).toString() + ". " + commands[n] + "\n"
+
+  const messages = [
+    {"role": "system", "content": "Вибери декілька команд зі списку, що найліпше підходять до запиту користувача. Подавай номери найпідходящих команд, пояснення свого вибору й оцінку від 0 до 100. Памʼятай:\n -Спершу виділи основну дію у запиті користувача\n -Дія з команди має досить точно збігатися з бажанням, яке висловлює користувач у запиті\n -**Обовʼязково** зверни увагу на команди з '…' в кінці!\n -У поясненні, замість '…' допиши чого не вистачає, щоб якнайкраще передати запит користувача у команді\n -Підходящих команд може і не бути: якщо сумніваєшся, став низьку оцінку!"},
+    {"role": "user", "content": "Запит: " + prompt},
+    {"role": "user", "content": "Команди: " + numbered_commands}
+  ]
+
+  const res = await ask_mistral(messages, choose_schema, key)
+  res.komandy.forEach(c => c.komanda = commands[c.nomer-1])
+
+  return res.komandy
+}
+
 
 guess_schema = {
   "type": "json_schema",
@@ -80,6 +116,7 @@ async function guess(prompt, key)
     {"role": "system", "content": "Ти досконально знаєш українську мову і розумієш контекст парсерних ігор. Дай декілька варіантів команди для парсерного інтерфейсу українською, що найліпше відповідає запиту.\n\n# Вказівки\n- Команда українською мовою\n -_Без_ ком, _без_ дужок і _без_ крапки в кінці\n- Без дієприслівників (_без_ 'швидко' тощо)\n-Спершу в команді дієслово, а потім—предмет\n- Дієслово в _інфінитиві_–тобто, дієслово має відповідати на питання \"що робити?\"\n- Лише один предмет\n -Уточнення предмету, якщо є в запиті, лише після іменника (як-то 'шапка Івана', але _не_ 'Іванова шапка')\n- Не вигадуй свої дії, предмети чи уточнення предмету! **Команди мають містити лише інформацію з запиту** -Оціни від 0 до 100, наскільки підходить команда до запиту."},
     {"role": "user", "content": "Запит: " + prompt}
   ]
+  // TODO: Перетворення до інфінітиву так і не працює надійно
   return await ask_mistral(messages, guess_schema, key)
 }
 
