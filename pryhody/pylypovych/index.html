@@ -71,10 +71,14 @@ input = document.getElementById("input")
 
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
+let running = false
+
 function enter() {
+  if(running) return
+
   /* It can be hard to input proper apostrophe symbol, and it seems that is
      merely impossible on iPhone. So, first, change every apostrophe-like
-     symbol (except ") to proper apostrophe */
+     symbol (except ") to the proper apostrophe */
   /* TODO: properly treat quoted words and move this to Prolog, possibly by
      compiling it with PCRE. */
   input.value = input.value.replace(/[‘’’']/g, "ʼ")
@@ -84,6 +88,8 @@ function enter() {
   paragraph("Внутрішній голос: " + capitalize(input.value))
   input.value = ""
   paragraph("")
+
+  running = true
 }
 
 function block() {
@@ -114,7 +120,9 @@ function paragraph(text) {
 
 /* Завантажується після .qlf-модуля і переозначує потрібні предикати */
 
-зчитати_рядок(Стр) :- Promise := promise_read_input, await(Promise, Стр).
+зчитати_рядок(Стр) :-
+	js_script("running = false", _),
+	Promise := promise_read_input, await(Promise, Стр).
 
 пустий_рядок :-
 	flush_output, % Заставити SWIPL вилити буфер виводу
