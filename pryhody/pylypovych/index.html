@@ -6,19 +6,23 @@
   <title>Пригода Микити Пилиповича</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style> input, label, textarea {font-family: serif} </style>
+  <style>
+    input, label, textarea {font-family: serif}
+    .muted { color: darkgray }
+    .active { color: black }
+  </style>
 </head>
 
 <body>
 
 <p></p>
-<div id="prompt_line"
+<div id="prompt_line" class="active"
      style="display:flex; align-items: center; padding-bottom: 1ex">
-  <div style="flex:none">Внутрішній голос:&nbsp</div>
+  <div style="color:inherit; flex:none">Внутрішній голос:&nbsp</div>
   <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
-	 style="width:100%; font-size: 1rem">
+	 style="color:inherit; width:100%; font-size: 1rem">
 </div>
 
 <script src="../swipl-bundle-devel.js"></script>
@@ -66,15 +70,20 @@ new_game();
 
 
 const output = document.getElementById("output");
-prompt_line = document.getElementById("prompt_line")
-input = document.getElementById("input")
+const prompt_line = document.getElementById("prompt_line")
+const input = document.getElementById("input")
 
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
-let running = false
+const game = {
+  set running(to_running) {
+    prompt_line.className = to_running? 'muted' : 'active'
+  },
+  get running() { return prompt_line.className == 'muted' }
+}
 
 function enter() {
-  if(running) return
+  if(game.running) return
 
   /* It can be hard to input proper apostrophe symbol, and it seems that is
      merely impossible on iPhone. So, first, change every apostrophe-like
@@ -89,7 +98,7 @@ function enter() {
   input.value = ""
   paragraph("")
 
-  running = true
+  game.running = true
 }
 
 function block() {
@@ -121,7 +130,7 @@ function paragraph(text) {
 /* Завантажується після .qlf-модуля і переозначує потрібні предикати */
 
 зчитати_рядок(Стр) :-
-	js_script("running = false", _),
+	js_script("game.running = false", _),
 	Promise := promise_read_input, await(Promise, Стр).
 
 пустий_рядок :-
