@@ -69,7 +69,7 @@ choose_schema = {
       }
     }
   }},
-  "name": "rank_schema",
+  "name": "choose_schema",
   "strict": true
 }}
 
@@ -87,6 +87,8 @@ async function choose(prompt, commands, key)
 
   const res = await ask_mistral(messages, choose_schema, key)
   res.komandy.forEach(c => c.komanda = commands[c.nomer-1])
+
+  console.log(res.komandy)
 
   return res.komandy
 }
@@ -118,7 +120,8 @@ async function guess(prompt, key)
     {"role": "user", "content": "Запит: " + prompt}
   ]
   // TODO: Перетворення до інфінітиву так і не працює надійно
-  return await ask_mistral(messages, guess_schema, key)
+  res = await ask_mistral(messages, guess_schema, key)
+  return res.varianty
 }
 
 

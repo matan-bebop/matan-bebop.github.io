@@ -20,10 +20,7 @@ dict_dija(Dict, Dict.dija).
     мм_ключ(Ключ),
     Promise := guess(Запит, Ключ),
     catch(await(Promise, Vidpovidj), _, fail),
-    % Всратий Містраль не дотримується JSON Schema відповіді, згідно з якою у
-    % відповіді має бути масив varianty на самому верхньому рівні
-    (is_dict(Vidpovidj) -> member(Варіант, Vidpovidj.varianty)
-                         ; member(Варіант, Vidpovidj)),
+    member(Варіант, Vidpovidj),
     Варіант.ocinka > 75, розбити_на_слова(Варіант.komanda, СловаКоманди).
 мм_підходяща(СловаКоманди, Запит) :-
     оповідь("Проконсультуюся з ноосферою. "), flush_output,
