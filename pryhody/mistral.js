@@ -122,7 +122,9 @@ async function guess(prompt, key)
   // TODO: Порядок дієслово-предмет не працює надійно
   const res = await ask_mistral(messages, guess_schema, key)
   // Все ж, Містраль не видає результат завжди згідно до JSON схеми
-  return res.varianty? res.varianty : res
+  if(res.varianty) return res.varianty
+  else if(res[0].varianty) return res[0].varianty
+  else return res
 }
 
 
