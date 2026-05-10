@@ -87,8 +87,7 @@ async function choose(prompt, commands, key)
 
   const res = await ask_mistral(messages, choose_schema, key)
   res.komandy.forEach(c => c.komanda = commands[c.nomer-1])
-
-  console.log(res.komandy)
+  // TODO: Інколи c.komanda виходить undefined. Як таке може статися?
 
   return res.komandy
 }
@@ -120,8 +119,10 @@ async function guess(prompt, key)
     {"role": "user", "content": "Запит: " + prompt}
   ]
   // TODO: Перетворення до інфінітиву так і не працює надійно
-  res = await ask_mistral(messages, guess_schema, key)
-  return res.varianty
+  // TODO: Порядок дієслово-предмет не працює надійно
+  const res = await ask_mistral(messages, guess_schema, key)
+  // Все ж, Містраль не видає результат завжди згідно до JSON схеми
+  return res.varianty? res.varianty : res
 }
 
 
