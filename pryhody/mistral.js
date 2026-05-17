@@ -87,16 +87,15 @@ async function choose(prompt, commands, key)
 
   const res = await ask_mistral(messages, choose_schema, key)
 
-<<<<<<< HEAD
-=======
   // Інколи мовленнєва модель вибирає номер "0", якщо нічого не може обрати.
   // Буває також, що вона ставить номер поза розміром масиву. Тому, спершу
   // відфільтрувати такі випадки, а тоді вже вставити команду за номером:
-  res.komandy
+  res.komandy = res.komandy
     .filter(c => c.nomer >= 1 && c.nomer <= commands.length)
-    .forEach(c => c.komanda = commands[c.nomer-1])
+  res.komandy.forEach(c => c.komanda = commands[c.nomer-1])
 
->>>>>>> 23588c0 (Містраль: Викидати номери які вочевидь некоректні)
+  console.log(JSON.stringify(res))
+
   return res.komandy
 }
 
