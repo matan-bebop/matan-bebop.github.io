@@ -26,7 +26,7 @@ dict_dija(Dict, Dict.dija).
     Оцінка is Варіант.ocinka - 100,
     розбити_на_слова(Варіант.komanda, СловаКоманди).
 мм_підходяща(СловаКоманди-Оцінка, Запит) :-
-    оповідь("Проконсультуюся з ноосферою. "), flush_output,
+    мм_задума, flush_output,
     найкращі_команди(3, [[…]], СловаКомандОцінки,
 		     1->4, мм_ранжовані(Запит)),
     member(СловаКоманди-Оцінка, СловаКомандОцінки), Оцінка > 75.
@@ -40,7 +40,7 @@ dict_dija(Dict, Dict.dija).
      -> Promise := rank(Запит, СтрКоманд, Ключ)
      ;  Promise := choose(Запит, СтрКоманд, Ключ)),
     catch(await(Promise, Vidpovidj), _, fail),
-    оповідь("Еее… "), flush_output,
+    нуегм, flush_output,
     maplist(dict_variant_pair, Vidpovidj, КомандиОцінки).
 
 dict_variant_pair(Dict, СловаКоманди-Dict.ocinka) :-
