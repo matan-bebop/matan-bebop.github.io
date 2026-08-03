@@ -62,7 +62,7 @@ async function new_game()
   if(mistral_key = url_params.get("key"))
     await swipl.prolog.forEach('assertz(мм_ключ("' + mistral_key + '")).')
 
-  await swipl.prolog.forEach("грати.").catch(error => block())
+  await swipl.prolog.forEach("гра.").catch(error => block())
   // Чому я все одно отримую Unhandled promise rejection по ванільному halt?
 }
 
