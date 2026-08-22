@@ -1,0 +1,4 @@
+input, label, textarea {font-family: serif; font-size: 1rem}
+
+.width-75 { max-width: clamp(45ch, 90vw, 75ch) }
+
