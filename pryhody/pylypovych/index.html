@@ -4,19 +4,13 @@
 <head>
   <meta charset="UTF8">
   <title>Пригода Микити Пилиповича</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    input, label, textarea {font-family: serif}
-    .muted { color: darkgray }
-    .active { color: black }
-  </style>
+ 
+  <link href="styles/pylypovych.css" rel="stylesheet" />
 </head>
 
 <body>
 
-<div id="page"
-     style="max-width: clamp(45ch, 90vw, 75ch); margin: auto"
+<div id="page" class="width-75" style="margin: auto">
 
 <p></p>
 <div id="prompt_line" class="active"
@@ -25,7 +19,7 @@
   <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
-	 style="color:inherit; width:100%; font-size: 1rem">
+	 style="color:inherit; width:100%">
 </div> <!-- prompt_line -->
 
 </div> <!-- page -->
