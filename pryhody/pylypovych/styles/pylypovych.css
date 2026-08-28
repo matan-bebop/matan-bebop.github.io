@@ -4,3 +4,6 @@ input, label, textarea {font-family: serif; font-size: 1rem}
 
 .muted { color: darkgray }
 .active { color: black }
+
+.directions { font-style: italic }
+.character { font-variant: small-caps; font-weight: bolder }
