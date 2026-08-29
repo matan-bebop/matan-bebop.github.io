@@ -5,5 +5,10 @@ input, label, textarea {font-family: serif; font-size: 1rem}
 .muted { color: darkgray }
 .active { color: black }
 
+
+.first-par::first-letter {
+  font-size: 150%
+}
+
 .directions { font-style: italic }
 .character { font-variant: small-caps; font-weight: bolder }
