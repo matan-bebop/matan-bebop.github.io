@@ -18,13 +18,13 @@
 
 <div id="prompt_line" class="active"
      style="display:flex; align-items: center; padding-bottom: 1ex">
-  <div style="color:inherit; flex:none" class="character">
+  <div style="flex:none" class="character">
      Внутрішній голос:&nbsp
   </div>
   <input type="text" id="input"
 	 onkeypress='if(event.key == "Enter") { enter() }'
 	 autofocus onfocusout="refocus()"
-	 style="color:inherit; width:100%">
+	 style="width:100%">
 </div> <!-- prompt_line -->
 
 </div> <!-- page -->
@@ -58,9 +58,9 @@ async function new_game()
 {
   swipl = await SWIPL(swipl_options)
 
+  await swipl.prolog.load_scripts() /* переозначити ввід і вивід, тощо */
   await swipl.prolog.consult("pylypovych-web.qlf")
   await swipl.prolog.consult("mistral.pl")
-  await swipl.prolog.load_scripts() /* переозначити ввід і вивід */
 
   const url_params = new URLSearchParams(window.location.search)
   if(mistral_key = url_params.get("key"))
@@ -96,9 +96,9 @@ function enter() {
      compiling it with PCRE. */
   input.value = input.value.replace(/[‘’’']/g, "ʼ")
 
+  inner_voice_says(input.value)
   resolve_input(input.value)
   promise_read_input = new Promise(r => {resolve_input = r})
-  says("Внутрішній голос", capitalize(input.value))
   input.value = ""
   paragraph("")
 
@@ -131,17 +131,41 @@ function paragraph(text) {
   grow(new_par)
 }
 
+function span(style, text) {
+  let el = document.createElement("span")
+  el.className = style; el.innerText = text
+  return el
+}
+
+function continue_with_span(style, text) {
+  const pars = document.getElementsByTagName("p")
+  const last_par = pars[pars.length-1]
+  last_par.appendChild(span(style, text))
+}
+
 function says(who, text) {
   const	new_par = document.createElement("p")
   
-  let el = document.createElement("span")
-  el.className = "character"
-  el.innerText = capitalize(who) + ": "
+  let el = span("character", capitalize(who) + ": ")
   new_par.appendChild(el)
 
   format(text, new_par)
 
   grow(new_par)
+}
+
+function inner_voice_says(cmd) {
+  const parsable = swipl.prolog.call('розбити_на_слова("' + cmd + '", Слова), phrase(команда(_), Слова)')
+
+  console.log("Внутрішній голос: ", cmd)
+
+  if (parsable) {
+    const new_par = document.createElement("p")
+    new_par.appendChild(span("character", 'Внутрішній голос: '))
+    new_par.appendChild(span("command", capitalize(cmd)))
+    grow(new_par)
+  }
+  else says("Внутрішній голос", capitalize(cmd))
 }
 
 /* Format text so that everything in () gets italic */
@@ -162,13 +186,15 @@ function format(text, par) {
 
 <script type="text/prolog" id="aux.pl">
 
-/* Завантажується після .qlf-модуля і переозначує потрібні предикати */
+/* Завантажується _перед_ .qlf-модулем і переозначує потрібні предикати */
 
-зчитати_рядок(Стр) :-
+:- multifile зчитати_рядок/1, пустий_рядок/0, abort/0, каже/2.
+
+зчитати_рядок(Стр) :- !,
 	js_script("game.running = false", _),
 	Promise := promise_read_input, await(Promise, Стр).
 
-пустий_рядок :-
+пустий_рядок :- !,
 	flush_output, % Заставити SWIPL вилити буфер виводу
 	_ := paragraph(""). % Почати новий абзац
 
@@ -179,7 +205,19 @@ function format(text, par) {
 	_ := says(ПовнеІмʼяСтр, ЩоСтр),
 	абзац.
 
-abort :- оповідь("Не підтримується у веб-версії.").
+написати_втупу(команда, Щось) :- !,
+	flush_output,
+	atom_string(Щось, Стр),
+	_ := console.log(Стр),
+	_ := continue_with_span("command", Стр).
+
+написати_втупу(сцена, Щось) :- !,
+	flush_output,
+	atom_string(Щось, Стр),
+	_ := console.log(Стр),
+	_ := continue_with_span("scene", Стр).
+
+abort :- !, оповідь("Не підтримується у веб-версії.").
 
 </script>
 
