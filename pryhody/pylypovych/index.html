@@ -181,6 +181,11 @@ function format(text, par) {
   }
 }
 
+function finish_in_progress(style) {
+   el = document.getElementsByClassName("in_progress")[0]
+   if(el) el.className = style
+}
+
 </script>
 
 
@@ -192,6 +197,10 @@ function format(text, par) {
 
 зчитати_рядок(Стр) :- !,
 	js_script("game.running = false", _),
+	% Тут також поновити стиль підсвічування сцени куди прийшли
+	зараз(Де), стиль_сцени(Де, Стиль),
+	_ := finish_in_progress(Стиль),
+	% Чекати на введення
 	Promise := promise_read_input, await(Promise, Стр).
 
 пустий_рядок :- !,
@@ -215,7 +224,11 @@ function format(text, par) {
 	flush_output,
 	atom_string(Щось, Стр),
 	_ := console.log(Стр),
-	_ := continue_with_span("scene", Стр).
+	_ := continue_with_span("in_progress", Стр).
+
+стиль_сцени(трамвай, "tram") :- !.
+стиль_сцени(Де, "Carpatians") :- увісні(Де), !.
+стиль_сцени(_Де, "Kurenivka").
 
 abort :- !, оповідь("Не підтримується у веб-версії.").
 

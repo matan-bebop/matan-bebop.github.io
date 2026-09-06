@@ -17,7 +17,12 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
   font-variant: small-caps; font-weight: bolder;
   color: midnightblue
 }
-.scene { background-color: #d5f7d7 }
+
+.in_progress { }
+.Carpatians { background-color: #d5f7d7 }
+.tram { background-color: #fff7cb }
+.Kurenivka { background-color: #f5ebdd }
+
 .command {
   font-family: "Courier New", monospace;
   font-weight: lighter; font-size: smaller;
