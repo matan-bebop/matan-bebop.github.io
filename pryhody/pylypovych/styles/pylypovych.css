@@ -12,7 +12,10 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
   font-size: 150%
 }
 
-.directions { font-style: italic }
+.directions {
+  font-style: italic;
+  margin-top: 0.6em; margin-bottom: 0.6em
+}
 .character {
   font-variant: small-caps; font-weight: bolder;
   color: midnightblue
