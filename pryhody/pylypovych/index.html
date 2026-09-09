@@ -183,8 +183,8 @@ function format(text, par) {
 }
 
 function finish_in_progress(style) {
-   el = document.getElementsByClassName("in_progress")[0]
-   if(el) el.className = style
+  const el = document.getElementsByClassName("in_progress")[0]
+  if (el) { console.log(el); el.className = style }
 }
 
 </script>
@@ -194,19 +194,17 @@ function finish_in_progress(style) {
 
 /* Завантажується _перед_ .qlf-модулем і переозначує потрібні предикати */
 
-:- multifile зчитати_рядок/1, пустий_рядок/0, abort/0, каже/2.
+:- multifile зчитати_рядок/1, пустий_рядок/0, abort/0, каже/2, заходить/1.
 
 зчитати_рядок(Стр) :- !,
 	js_script("game.running = false", _),
-	% Тут також поновити стиль підсвічування сцени куди прийшли
-	зараз(Де), стиль_сцени(Де, Стиль),
-	_ := finish_in_progress(Стиль),
 	% Чекати на введення
 	Promise := promise_read_input, await(Promise, Стр).
 
 пустий_рядок :- !,
 	flush_output, % Заставити SWIPL вилити буфер виводу
 	_ := paragraph(""). % Почати новий абзац
+% TODO: після Enter, виводиться абзац -> пустий рядок який залишається висіти
 
 каже(Хто, Що) :- !,
 	називається(Хто, ПовнеІмʼя),
@@ -226,6 +224,12 @@ function finish_in_progress(style) {
 	atom_string(Щось, Стр),
 	_ := console.log(Стр),
 	_ := continue_with_span("in_progress", Стр).
+
+заходить(Куди) :-
+	% Поновити стиль підсвічування сцени куди прийшли
+	стиль_сцени(Куди, Стиль),
+	_ := finish_in_progress(Стиль),
+	false.
 
 стиль_сцени(трамвай, "tram") :- !.
 стиль_сцени(Де, "Carpatians") :- увісні(Де), !.
