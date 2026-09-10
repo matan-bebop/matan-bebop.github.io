@@ -14,7 +14,7 @@
 
 <div id="page" class="width-75" style="margin: auto">
 
-<p class="directions first-par"></p>
+<p class="stage-directions first-par"></p>
 
 <div id="prompt_line" class="active"
      style="display:flex; align-items: center;
@@ -127,7 +127,7 @@ function grow(el) {
 
 function paragraph(text) {
   const	new_par = document.createElement("p")
-  new_par.className = "directions"
+  new_par.className = "stage-directions"
   new_par.innerText = text
   grow(new_par)
 }

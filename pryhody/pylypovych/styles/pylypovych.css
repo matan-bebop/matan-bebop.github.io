@@ -8,23 +8,27 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
 .active { }
 
 
+/***********************
+    Paragraph styles
+************************/
+
 .first-par::first-letter {
   font-size: 150%
 }
 
-.directions {
+.stage-directions {
   font-style: italic;
   margin-top: 0.6em; margin-bottom: 0.6em
 }
+
+/******************
+    Text styles
+*******************/
+
 .character {
   font-variant: small-caps; font-weight: bolder;
   color: midnightblue
 }
-
-.in_progress { }
-.Carpatians { background-color: #d5f7d7 }
-.tram { background-color: #fff7cb }
-.Kurenivka { background-color: #f5ebdd }
 
 .command {
   font-family: "Courier New", monospace;
@@ -33,3 +37,9 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
   padding: 0.25ex 0.25em; /* widen gray rect */
   position: relative; bottom: 0.3ex; /* make text jump a little bit up */
 }
+
+/* Scene types: */
+.in_progress { }
+.Carpatians { background-color: #d5f7d7 }
+.tram { background-color: #fff7cb }
+.Kurenivka { background-color: #f5ebdd }
