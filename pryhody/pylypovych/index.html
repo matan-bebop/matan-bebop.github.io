@@ -44,13 +44,13 @@ var swipl_options = {
   on_output: function(msg,stream) {
     console.log(msg)
     if (stream == "stdout") {
-      const pars = document.getElementsByTagName("p")
-      const last_par = pars[pars.length-1]
-      if(last_par.textContent != "" && msg.charCodeAt(msg.length-1) == 10) {
+      const pars = document.getElementsByTagName("p"),
+            last_par = pars[pars.length-1]
+      last_par.appendChild(document.createTextNode(msg))
+      if (msg.charCodeAt(msg.length-1) == 10) {
         const br = document.createElement("br")
         last_par.appendChild(br)
       }
-      format(msg, last_par)
     }
   }
 };
@@ -78,6 +78,8 @@ const page = document.getElementById("page")
 const prompt_line = document.getElementById("prompt_line")
 const input = document.getElementById("input")
 
+let dialogue_starts = false
+
 function refocus() { setTimeout(function () { input.focus() }, 0) }
 
 const game = {
@@ -101,7 +103,7 @@ function enter() {
   resolve_input(input.value)
   promise_read_input = new Promise(r => {resolve_input = r})
   input.value = ""
-  paragraph("")
+  new_paragraph()
 
   game.running = true
 }
@@ -125,10 +127,14 @@ function grow(el) {
   prompt_line.scrollIntoView(false)
 }
 
-function paragraph(text) {
+function new_paragraph() {
   const	new_par = document.createElement("p")
-  new_par.className = "stage-directions"
-  new_par.innerText = text
+
+  if(dialogue_starts) {
+    new_par.className = "dialogue"
+    dialogue_starts = false
+  } else new_par.className = "stage-directions"
+
   grow(new_par)
 }
 
@@ -144,17 +150,6 @@ function continue_with_span(style, text) {
   last_par.appendChild(span(style, text))
 }
 
-function says(who, text) {
-  const	new_par = document.createElement("p")
-  
-  let el = span("character", capitalize(who) + ": ")
-  new_par.appendChild(el)
-
-  format(text, new_par)
-
-  grow(new_par)
-}
-
 function inner_voice_says(cmd) {
   const parsable = swipl.prolog.call('розбити_на_слова("' + cmd + '", Слова), phrase(команда(_), Слова)')
 
@@ -166,19 +161,10 @@ function inner_voice_says(cmd) {
     new_par.appendChild(span("command", capitalize(cmd)))
     grow(new_par)
   }
-  else says("Внутрішній голос", capitalize(cmd))
-}
-
-/* Format text so that everything in () gets italic */
-function format(text, par) {
-  tt = text.split(/[()]/)
-  let is_phrase = true
-  for (t of tt) {
-    if (is_phrase) el = document.createTextNode(t)
-    else           { el = document.createElement("i");
-                     el.innerText = "(" + t + ")" }
-    par.appendChild(el)
-    is_phrase = !is_phrase
+  else {
+    swipl.prolog.call('каже("Внутрішній голос",'
+                            + '"' + capitalize(cmd) + '"),'
+                      + 'flush_output.')
   }
 }
 
@@ -194,7 +180,8 @@ function finish_in_progress(style) {
 
 /* Завантажується _перед_ .qlf-модулем і переозначує потрібні предикати */
 
-:- multifile зчитати_рядок/1, пустий_рядок/0, abort/0, каже/2, заходить/1.
+:- multifile зчитати_рядок/1, пустий_рядок/0, каже/2, написати_втупу/2,
+	     abort/0, заходить/1.
 
 зчитати_рядок(Стр) :- !,
 	js_script("game.running = false", _),
@@ -203,15 +190,12 @@ function finish_in_progress(style) {
 
 пустий_рядок :- !,
 	flush_output, % Заставити SWIPL вилити буфер виводу
-	_ := paragraph(""). % Почати новий абзац
+	_ := new_paragraph().
 % TODO: після Enter, виводиться абзац -> пустий рядок який залишається висіти
 
-каже(Хто, Що) :- !,
-	називається(Хто, ПовнеІмʼя),
-	atom_string(ПовнеІмʼя, ПовнеІмʼяСтр), atom_string(Що, ЩоСтр),
-	flush_output,
-	_ := says(ПовнеІмʼяСтр, ЩоСтр),
-	абзац.
+каже(_Хто, _Що) :-
+	js_script("dialogue_starts = true", _),
+	fail. % Перейти до каже/2 у грі
 
 написати_втупу(команда, Щось) :- !,
 	flush_output,
@@ -224,6 +208,18 @@ function finish_in_progress(style) {
 	atom_string(Щось, Стр),
 	_ := console.log(Стр),
 	_ := continue_with_span("in_progress", Стр).
+
+написати_втупу(реплікова_ремарка, Щось) :- !,
+	flush_output,
+	atom_string(Щось, Стр),
+	_ := console.log("(" + Стр + ")"),
+	_ := continue_with_span("delivery-direction", "(" + Стр + ")").
+
+написати_втупу(дійова_особа, Щось) :- !,
+	flush_output,
+	atom_string(Щось, Стр),
+	_ := console.log(Стр),
+	_ := continue_with_span("character", Стр).
 
 заходить(Куди) :-
 	% Поновити стиль підсвічування сцени куди прийшли

@@ -21,6 +21,9 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
   margin-top: 0.6em; margin-bottom: 0.6em
 }
 
+.dialogue { }
+
+
 /******************
     Text styles
 *******************/
@@ -28,6 +31,10 @@ body, input, label, textarea {font-family: serif; font-size: 1rem}
 .character {
   font-variant: small-caps; font-weight: bolder;
   color: midnightblue
+}
+
+.delivery-direction {
+  font-style: italic
 }
 
 .command {
